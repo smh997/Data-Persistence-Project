@@ -10,6 +10,7 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public Text bestScoreText;
     public Text ScoreText;
     public GameObject GameOverText;
     
@@ -22,6 +23,14 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (DataManager.Instance.bestScoresData.playerScore > 0)
+        {
+            bestScoreText.text = "Best Score: " + DataManager.Instance.bestScoresData.playerName + ": " + DataManager.Instance.bestScoresData.playerScore.ToString();
+        }
+        else
+        {
+            bestScoreText.text = "Best Score: Not Available!";
+        }
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -59,6 +68,10 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+            else if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene(0);
+            }
         }
     }
 
@@ -66,6 +79,13 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+        if (DataManager.Instance.bestScoresData.playerScore < m_Points)
+        {
+            DataManager.Instance.bestScoresData.playerName = DataManager.Instance.currentPlayer;
+            DataManager.Instance.bestScoresData.playerScore = m_Points;
+            DataManager.Instance.SaveBestScore(m_Points);
+            bestScoreText.text = "Best Score: " + DataManager.Instance.bestScoresData.playerName + ": " + DataManager.Instance.bestScoresData.playerScore.ToString();
+        }
     }
 
     public void GameOver()
